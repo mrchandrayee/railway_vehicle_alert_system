@@ -1,0 +1,59 @@
+camera:
+  source: "input.mp4"       # 0 for webcam, or RTSP URL
+  camera_id: "railway_cam_01"
+  output: "runs/annotated_railway.mp4"
+  show: true
+  resize_width: 960
+
+detector:
+  model: "yolo11n.pt"       # auto-downloads on first run
+  confidence: 0.30
+  iou: 0.50
+  # COCO vehicle classes: car=2, motorcycle=3, bus=5, truck=7
+  # For train detection, use a custom model trained with a train class.
+  classes: [2, 3, 5, 7]
+  device: null
+
+tracker:
+  type: "iou"              # lightweight built-in tracker
+  max_age: 35
+  match_iou: 0.18
+  trail_length: 24
+  anchor: "bottom"
+
+zone:
+  name: "railway_restricted_zone"
+  # Normalized polygon points (0..1) relative to processed frame.
+  # Replace with the actual railway/track danger region in your camera view.
+  polygon: [[0.18, 0.36], [0.82, 0.36], [0.98, 0.92], [0.06, 0.92]]
+  anchor: "bottom_center"
+  trigger: "enter"          # enter, exit, both
+  min_inside_frames: 2
+  min_confidence: 0.30
+
+events:
+  directory: "runs/events"
+  save_snapshot: true
+  crop_padding: 0.08
+  pre_seconds: 3
+  post_seconds: 5
+  max_clip_seconds: 20
+  flush_timeout_seconds: 8
+
+telegram:
+  enabled: false
+  bot_token: ""             # prefer TELEGRAM_BOT_TOKEN environment variable
+  chat_id: ""               # prefer TELEGRAM_CHAT_ID environment variable
+  send_photo: true
+  send_clip: true
+  photo_jpeg_quality: 82
+  photo_max_kb: 900
+  alert_cooldown_s: 30
+  per_track_cooldown: true
+
+visualization:
+  draw_zone: true
+  draw_labels: true
+  draw_trails: true
+  overlay_position: "top-left"
+  line_width: 2
